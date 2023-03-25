@@ -1,5 +1,5 @@
-defmodule AiPlaygroundWeb.PageControllerTest do
-  use AiPlaygroundWeb.ConnCase
+defmodule AIPlaygroundWeb.PageControllerTest do
+  use AIPlaygroundWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")

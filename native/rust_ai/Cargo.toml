@@ -1,0 +1,13 @@
+[package]
+name = "rust_ai"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+name = "rust_ai"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = "0.27.0"
+rust-bert = "0.20.0"

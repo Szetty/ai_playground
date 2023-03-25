@@ -1,4 +1,4 @@
-defmodule AiPlaygroundWeb.Endpoint do
+defmodule AIPlaygroundWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :ai_playground
 
   # The session will be stored in the cookie and signed,
@@ -21,7 +21,7 @@ defmodule AiPlaygroundWeb.Endpoint do
     at: "/",
     from: :ai_playground,
     gzip: false,
-    only: AiPlaygroundWeb.static_paths()
+    only: AIPlaygroundWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -46,5 +46,5 @@ defmodule AiPlaygroundWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug AiPlaygroundWeb.Router
+  plug AIPlaygroundWeb.Router
 end

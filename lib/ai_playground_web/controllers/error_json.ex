@@ -1,4 +1,4 @@
-defmodule AiPlaygroundWeb.ErrorJSON do
+defmodule AIPlaygroundWeb.ErrorJSON do
   # If you want to customize a particular status code,
   # you may add your own clauses, such as:
   #

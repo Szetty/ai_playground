@@ -1,4 +1,4 @@
-defmodule AiPlaygroundWeb.CoreComponents do
+defmodule AIPlaygroundWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
 
@@ -659,9 +659,9 @@ defmodule AiPlaygroundWeb.CoreComponents do
     # uncommenting and adjusting the following code:
 
     # if count = opts[:count] do
-    #   Gettext.dngettext(AiPlaygroundWeb.Gettext, "errors", msg, msg, count, opts)
+    #   Gettext.dngettext(AIPlaygroundWeb.Gettext, "errors", msg, msg, count, opts)
     # else
-    #   Gettext.dgettext(AiPlaygroundWeb.Gettext, "errors", msg, opts)
+    #   Gettext.dgettext(AIPlaygroundWeb.Gettext, "errors", msg, opts)
     # end
 
     Enum.reduce(opts, msg, fn {key, value}, acc ->

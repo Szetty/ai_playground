@@ -17,8 +17,9 @@ Mix.install(
 3. Token classification - BERT ner - using Bumblebee
 4. Text to image - Stable diffusion - needs GPU - using Bumblebee - play in public
 5. Coffee break
-6. Image classification - ResNet - using Bumblebee
-7. Demo on custom DNN, RNN, LSTM:
+6. Translations using T5 - using Rust NIF (Native Implemented Function)
+7. Image classification - ResNet - using Bumblebee
+8. Demo on custom DNN, RNN, LSTM:
 
 * using Axon on NX
 * https://www.analyticsvidhya.com/blog/2022/01/the-complete-lstm-tutorial-with-implementation/
@@ -26,7 +27,6 @@ Mix.install(
 
 1. Some models we cannot run on Beam yet:
 
-* T5 (https://huggingface.co/t5-base)
 * Flair (https://huggingface.co/flair)
 
 1. Bonus ChatGPT:

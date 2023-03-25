@@ -1,5 +1,5 @@
-defmodule AiPlaygroundWeb.ErrorHTML do
-  use AiPlaygroundWeb, :html
+defmodule AIPlaygroundWeb.ErrorHTML do
+  use AIPlaygroundWeb, :html
 
   # If you want to customize your error pages,
   # uncomment the embed_templates/1 call below

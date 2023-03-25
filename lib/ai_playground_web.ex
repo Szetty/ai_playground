@@ -1,12 +1,12 @@
-defmodule AiPlaygroundWeb do
+defmodule AIPlaygroundWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, components, channels, and so on.
 
   This can be used in your application as:
 
-      use AiPlaygroundWeb, :controller
-      use AiPlaygroundWeb, :html
+      use AIPlaygroundWeb, :controller
+      use AIPlaygroundWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -40,7 +40,7 @@ defmodule AiPlaygroundWeb do
     quote do
       use Phoenix.Controller,
         formats: [:html, :json],
-        layouts: [html: AiPlaygroundWeb.Layouts]
+        layouts: [html: AIPlaygroundWeb.Layouts]
 
       import Plug.Conn
 
@@ -51,7 +51,7 @@ defmodule AiPlaygroundWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {AiPlaygroundWeb.Layouts, :app}
+        layout: {AIPlaygroundWeb.Layouts, :app}
 
       unquote(html_helpers())
     end
@@ -83,7 +83,7 @@ defmodule AiPlaygroundWeb do
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
-      import AiPlaygroundWeb.CoreComponents
+      import AIPlaygroundWeb.CoreComponents
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
@@ -96,9 +96,9 @@ defmodule AiPlaygroundWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: AiPlaygroundWeb.Endpoint,
-        router: AiPlaygroundWeb.Router,
-        statics: AiPlaygroundWeb.static_paths()
+        endpoint: AIPlaygroundWeb.Endpoint,
+        router: AIPlaygroundWeb.Router,
+        statics: AIPlaygroundWeb.static_paths()
     end
   end
 

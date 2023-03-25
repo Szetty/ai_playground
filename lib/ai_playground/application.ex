@@ -1,4 +1,4 @@
-defmodule AiPlayground.Application do
+defmodule AIPlayground.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -7,20 +7,22 @@ defmodule AiPlayground.Application do
 
   @impl true
   def start(_type, _args) do
+    AIPlayground.init()
+
     children = [
       # Start the Telemetry supervisor
-      AiPlaygroundWeb.Telemetry,
+      AIPlaygroundWeb.Telemetry,
       # Start the PubSub system
-      {Phoenix.PubSub, name: AiPlayground.PubSub},
+      {Phoenix.PubSub, name: AIPlayground.PubSub},
       # Start the Endpoint (http/https)
-      AiPlaygroundWeb.Endpoint
-      # Start a worker by calling: AiPlayground.Worker.start_link(arg)
-      # {AiPlayground.Worker, arg}
+      AIPlaygroundWeb.Endpoint
+      # Start a worker by calling: AIPlayground.Worker.start_link(arg)
+      # {AIPlayground.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: AiPlayground.Supervisor]
+    opts = [strategy: :one_for_one, name: AIPlayground.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
@@ -28,7 +30,7 @@ defmodule AiPlayground.Application do
   # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
-    AiPlaygroundWeb.Endpoint.config_change(changed, removed)
+    AIPlaygroundWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

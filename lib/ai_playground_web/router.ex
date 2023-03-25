@@ -1,11 +1,11 @@
-defmodule AiPlaygroundWeb.Router do
-  use AiPlaygroundWeb, :router
+defmodule AIPlaygroundWeb.Router do
+  use AIPlaygroundWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, {AiPlaygroundWeb.Layouts, :root}
+    plug :put_root_layout, {AIPlaygroundWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -14,14 +14,14 @@ defmodule AiPlaygroundWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", AiPlaygroundWeb do
+  scope "/", AIPlaygroundWeb do
     pipe_through :browser
 
     get "/", PageController, :home
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", AiPlaygroundWeb do
+  # scope "/api", AIPlaygroundWeb do
   #   pipe_through :api
   # end
 
@@ -37,7 +37,7 @@ defmodule AiPlaygroundWeb.Router do
     scope "/dev" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: AiPlaygroundWeb.Telemetry
+      live_dashboard "/dashboard", metrics: AIPlaygroundWeb.Telemetry
     end
   end
 end

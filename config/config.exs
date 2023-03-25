@@ -8,13 +8,13 @@
 import Config
 
 # Configures the endpoint
-config :ai_playground, AiPlaygroundWeb.Endpoint,
+config :ai_playground, AIPlaygroundWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [
-    formats: [html: AiPlaygroundWeb.ErrorHTML, json: AiPlaygroundWeb.ErrorJSON],
+    formats: [html: AIPlaygroundWeb.ErrorHTML, json: AIPlaygroundWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: AiPlayground.PubSub,
+  pubsub_server: AIPlayground.PubSub,
   live_view: [signing_salt: "xhi8B05n"]
 
 # Configure esbuild (the version is required)
