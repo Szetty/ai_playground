@@ -68,7 +68,7 @@ ENV LD_LIBRARY_PATH="/libtorch/lib:${LD_LIBRARY_PATH}"
 COPY --from=build /ai_playground/_build/prod/rel/ai_playground /ai_playground
 
 # Expose required ports for the Elixir Phoenix server
-EXPOSE 4000
+EXPOSE 7860
 
 # Set the Elixir server as the entrypoint
 CMD ["/ai_playground/bin/ai_playground", "start"]
