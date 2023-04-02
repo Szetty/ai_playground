@@ -5,7 +5,7 @@ defmodule AIPlayground.MixProject do
     [
       app: :ai_playground,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.14.2",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -44,7 +44,9 @@ defmodule AIPlayground.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:rustler, "~> 0.27.0"}
+      {:rustler, "~> 0.27.0"},
+      {:kino_bumblebee, "~> 0.1.4"},
+      {:exla, "0.4.0"}
     ]
   end
 

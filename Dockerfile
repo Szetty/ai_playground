@@ -1,11 +1,31 @@
 # First stage: build
-FROM elixir:1.14 as build
+FROM elixir:1.14.2 as build
 
 # Update and install required build dependencies
 RUN apt-get update && apt-get install -y \
+    gpg \
     curl \
     wget \
+    git \
+    python3 \
+    python3-pip \
+    build-essential \
+    erlang-dev \
     unzip
+
+RUN pip3 install numpy
+
+# Dependencies needed to build for GPU
+# Add Bazel distribution URI as a package source
+RUN echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
+
+# Import Bazel's public GPG key
+RUN curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
+
+# Install Bazel
+RUN apt-get update && apt-get install -y \
+    bazel=3.7.2 \
+    --no-install-recommends
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -30,17 +50,22 @@ COPY mix.exs .
 COPY mix.lock .
 COPY assets ./assets
 
+ARG xla_target=cpu
+ENV XLA_TARGET=$xla_target
+ENV MIX_ENV=prod
+
 RUN mix setup
+RUN mix deps.compile
 
 # Copy app
-COPY lib ./lib
 COPY native ./native
 COPY priv ./priv
-# COPY rel ./rel
+COPY lib ./lib
 
 # Release the app
-ENV MIX_ENV=prod
-RUN mix assets.deploy && mix release
+RUN mix compile
+RUN mix assets.deploy
+RUN mix release
 
 # Second stage: run
 FROM debian:latest as run
@@ -70,5 +95,9 @@ COPY --from=build /ai_playground/_build/prod/rel/ai_playground /ai_playground
 # Expose required ports for the Elixir Phoenix server
 EXPOSE 7860
 
+# Clean up cache to reduce layer size
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # Set the Elixir server as the entrypoint
-CMD ["/ai_playground/bin/ai_playground", "start"]
+CMD ["sh", "-c", "/ai_playground/bin/ai_playground start_iex"]

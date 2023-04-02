@@ -1,119 +1,267 @@
+<!-- livebook:{"app_settings":{"slug":"xz"}} -->
+
 # State of the art Neural Networks in Elixir
 
 ```elixir
-Mix.install(
-  [
-    {:kino_bumblebee, "~> 0.1.0"},
-    {:exla, "~> 0.4.1"}
-  ],
-  config: [nx: [default_backend: EXLA.Backend]]
-)
+# Mix.install(
+#   [
+#     {:kino_bumblebee, "~> 0.1.0"},
+#     {:exla, "~> 0.4.1"}
+#   ],
+#   config: [nx: [default_backend: EXLA.Backend]]
+# )
+
+alias AIPlayground.KinoUI
 ```
+
+## My History
+
+* deploy on g4
+* add summarization
+* prepare for live demo
+* bonus model
+* more examples
+* potential test for ResNET
 
 ## Agenda
 
-1. Text generation - GPT2 - using Bumblebee
-2. Text classification - RoBERTa emotions - using Bumblebee
-3. Token classification - BERT ner - using Bumblebee
-4. Text to image - Stable diffusion - needs GPU - using Bumblebee - play in public
+1. Text generation
+2. Text classification
+3. Token classification
+4. Text to image
 5. Coffee break
-6. Translations using T5 - using Rust NIF (Native Implemented Function)
-7. Image classification - ResNet - using Bumblebee
-8. Demo on custom DNN, RNN, LSTM:
-
-* using Axon on NX
-* https://www.analyticsvidhya.com/blog/2022/01/the-complete-lstm-tutorial-with-implementation/
-* http://colah.github.io/posts/2015-08-Understanding-LSTMs/
-
-1. Some models we cannot run on Beam yet:
-
-* Flair (https://huggingface.co/flair)
-
-1. Bonus ChatGPT:
-
-* https://github.com/mgallo/openai.ex
-* https://medium.com/@pkp.plus/how-to-connect-to-chat-gpt-api-ce78e4e5f463
-
-Other helpful links:
-
-* https://www.strangeleaflet.com/lets-write-an-elixir-livebook-smart-cell
-
-## Example
-
-<!-- livebook:{"attrs":{"compiler":"exla","max_new_tokens":10,"min_new_tokens":5,"sequence_length":101,"task_id":"text_generation","variant_id":"gpt2"},"chunks":[[0,338],[340,502]],"kind":"Elixir.KinoBumblebee.TaskCell","livebook_object":"smart_cell"} -->
+6. Translations and summarization using T5
+7. Image classification
+8. Live demo on Neural Network building
+9. Some models we cannot run on Beam yet
+10. Bonus model
 
 ```elixir
-{:ok, model_info} = Bumblebee.load_model({:hf, "gpt2"}, log_params_diff: false)
-{:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "gpt2"})
+AIPlayground.all_models_working?()
+```
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## Intro
+
+* we are mainly talking about open source models from [Huggingface](https://huggingface.co/models)
+* possible ways to use AI models in Elixir:
+  * implement custom Neural Networks using **Axon** (on top of **Nx**)
+  * use **Bumblebee** (on top of **Axon**)
+  * use native code (especially Rust with **rust-bert**)
+  * export model from other language using ONNX
+  * using REST APIs
+  * call Python scripts using system commands
+* repo with everything related to this presentation
+* with the exception of live demo we will not focus on code, this is not a technical presentation, but more like a demonstration
+* after the presentation we can discuss more in detail
+
+<!-- livebook:{"attrs":{"compiler":"exla","task_id":"image_classification","top_k":null,"variant_id":"resnet"},"chunks":[[0,317],[319,644]],"kind":"Elixir.KinoBumblebee.TaskCell","livebook_object":"smart_cell"} -->
+
+```elixir
+{:ok, model_info} = Bumblebee.load_model({:hf, "microsoft/resnet-50"}, log_params_diff: false)
+
+{:ok, featurizer} = Bumblebee.load_featurizer({:hf, "microsoft/resnet-50"})
 
 serving =
-  Bumblebee.Text.generation(model_info, tokenizer,
-    min_new_tokens: 5,
-    max_new_tokens: 10,
-    compile: [batch_size: 1, sequence_length: 101],
+  Bumblebee.Vision.image_classification(model_info, featurizer,
+    compile: [batch_size: 1],
     defn_options: [compiler: EXLA]
   )
 
-text_input = Kino.Input.textarea("Text", default: "Yesterday, I was reading a book and")
-form = Kino.Control.form([text: text_input], submit: "Run")
+image_input = Kino.Input.image("Image", size: {224, 224})
+form = Kino.Control.form([image: image_input], submit: "Run")
 frame = Kino.Frame.new()
 
 form
 |> Kino.Control.stream()
-|> Kino.listen(fn %{data: %{text: text}} ->
+|> Stream.filter(& &1.data.image)
+|> Kino.listen(fn %{data: %{image: image}} ->
   Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
-  %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
-  Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
+  image = image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
+  output = Nx.Serving.run(serving, image)
+
+  output.predictions
+  |> Enum.map(&{&1.label, &1.score})
+  |> Kino.Bumblebee.ScoredList.new()
+  |> then(&Kino.Frame.render(frame, &1))
 end)
 
 Kino.Layout.grid([form, frame], boxed: true, gap: 16)
 ```
 
-<!-- livebook:{"branch_parent_index":0} -->
+<!-- livebook:{"branch_parent_index":1} -->
 
-## Text generation using GPT2
+## 1. Text generation using GPT2
+
+* using Bumblebee
 
 ```elixir
-{:ok, model_info} = Bumblebee.load_model({:hf, "gpt2"}, log_params_diff: false)
-{:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "gpt2"})
+model_runner = &AIPlayground.run_gpt2/1
 
-gpt2_serving =
-  Bumblebee.Text.generation(model_info, tokenizer,
-    min_new_tokens: 1,
-    max_new_tokens: 50,
-    compile: [batch_size: 1, sequence_length: 100],
+[
+  KinoUI.text_to_text("Good example", "What is the capital of Romania?", model_runner),
+  KinoUI.text_to_text("Missing ending", "I was driving and then", model_runner),
+  KinoUI.text_to_text("Same ending", "I was walking and", model_runner),
+  KinoUI.text_to_text("Just repeating", "I am done.", model_runner),
+  KinoUI.text_to_text("Again repeating", "I am 18 years old and", model_runner)
+]
+|> List.flatten()
+|> KinoUI.build_grid_layout()
+```
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 2. Text classification using RoBERTa
+
+* using Bumblebee
+
+```elixir
+model_runner = &AIPlayground.run_roberta/1
+
+[
+  KinoUI.text_to_scored_list("Test", "Oh wow! I did not know that!", model_runner)
+]
+|> List.flatten()
+|> KinoUI.build_grid_layout()
+```
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 3. Token classification using BERT NER
+
+* using Bumblebee
+
+```elixir
+model_runner = &AIPlayground.run_bert_ner/1
+
+[
+  KinoUI.text_to_highlighted_text(
+    "Test",
+    "Rachel Green works at Ralph Lauren in New York City in the sitcom Friends.",
+    model_runner
+  )
+]
+|> List.flatten()
+|> KinoUI.build_grid_layout()
+```
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 4. Text to image using Stable diffusion
+
+* using Bumblebee Elixir library
+* needs GPU
+
+```elixir
+# model_runner = &AIPlayground.run_stable_diffusion/1
+
+# [
+#   KinoUI.text_to_image(
+#     "Test",
+#     "numbat, forest, high quality, detailed, digital art",
+#     model_runner
+#   ),
+# ]
+# |> List.flatten()
+# |> KinoUI.build_grid_layout()
+```
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 5. Pause
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 6. Text translation and summarization using T5
+
+* we will use a NIF (Native Interface Function) built in Rust
+* using the **rustler** Elixir library to access the **rust-bert** library
+
+```elixir
+model_runner = &AIPlayground.translate_en_to_ro/1
+
+[
+  KinoUI.text_to_text("Example 1", "Good morning!", model_runner)
+]
+|> List.flatten()
+|> KinoUI.build_grid_layout()
+```
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 7. Image classification using ResNet
+
+* using Bumblebee
+
+```elixir
+model_runner = &AIPlayground.run_res_net/1
+
+[
+  KinoUI.image_to_scored_list("Test", model_runner)
+]
+|> List.flatten()
+|> KinoUI.build_grid_layout()
+```
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 8. Demo building a custom Deep Neural Network
+
+* we will build together an LSTM using the **Axon** Elixir library
+* **Axon** helps us build Neural Networks in a similar manner as **Keras** does when using Python
+* **Axon** is based on **Nx** (Numerical Elixir) which helps build efficient number crunching systems
+* https://www.analyticsvidhya.com/blog/2022/01/the-complete-lstm-tutorial-with-implementation/
+* http://colah.github.io/posts/2015-08-Understanding-LSTMs/
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 9. Models we cannot use in Elixir yet
+
+* Flair (https://huggingface.co/flair)
+
+<!-- livebook:{"branch_parent_index":1} -->
+
+## 10. Bonus model
+
+* chat with ChatGPT using the OpenAI REST API
+* https://github.com/mgallo/openai.ex
+* https://medium.com/@pkp.plus/how-to-connect-to-chat-gpt-api-ce78e4e5f463
+
+```elixir
+{:ok, model_info} = Bumblebee.load_model({:hf, "microsoft/resnet-50"}, log_params_diff: false)
+
+{:ok, featurizer} = Bumblebee.load_featurizer({:hf, "microsoft/resnet-50"})
+
+serving =
+  Bumblebee.Vision.image_classification(model_info, featurizer,
+    compile: [batch_size: 1],
     defn_options: [compiler: EXLA]
   )
-```
 
-```elixir
-ui_with_input_run_button_and_result = fn title, text ->
-  text_input = Kino.Input.textarea(title, default: text)
-  form = Kino.Control.form([text: text_input], submit: "Run")
-  frame = Kino.Frame.new()
+image_input = Kino.Input.image("Image", size: {224, 224})
+form = Kino.Control.form([image: image_input], submit: "Run")
+frame = Kino.Frame.new()
 
-  form
-  |> Kino.Control.stream()
-  |> Kino.listen(fn %{data: %{text: text}} ->
-    Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
-    %{results: [%{text: generated_text}]} = Nx.Serving.run(gpt2_serving, text)
-    # hd(String.split(generated_text, "\n"))
-    final_text = generated_text
-    Kino.Frame.render(frame, Kino.Markdown.new(final_text))
-  end)
+form
+|> Kino.Control.stream()
+|> Stream.filter(& &1.data.image)
+|> Kino.listen(fn %{data: %{image: image}} ->
+  Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
 
-  [form, frame]
-end
-```
+  image =
+    image.data
+    |> Nx.from_binary(:u8)
+    |> IO.inspect()
+    |> Nx.reshape({image.height, image.width, 3})
 
-```elixir
-Kino.Layout.grid(
-  [
-    ui_with_input_run_button_and_result.("Example 1", "The healthiest food is "),
-    ui_with_input_run_button_and_result.("Example 2", "What is my dream ?")
-  ]
-  |> List.flatten(),
-  boxed: true,
-  gap: 16
-)
+  output = Nx.Serving.run(serving, image)
+
+  output.predictions
+  |> Enum.map(&{&1.label, &1.score})
+  |> Kino.Bumblebee.ScoredList.new()
+  |> then(&Kino.Frame.render(frame, &1))
+end)
+
+Kino.Layout.grid([form, frame], boxed: true, gap: 16)
 ```

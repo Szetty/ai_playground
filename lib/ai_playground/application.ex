@@ -7,7 +7,14 @@ defmodule AIPlayground.Application do
 
   @impl true
   def start(_type, _args) do
+    IO.puts("Init")
     AIPlayground.init()
+
+    spawn(fn ->
+      if AIPlayground.all_models_working? do
+        IO.puts("All models working as expected")
+      end
+    end)
 
     children = [
       # Start the Telemetry supervisor

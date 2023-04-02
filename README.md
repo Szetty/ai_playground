@@ -1,10 +1,3 @@
----
-title: Ai Playground
-emoji: 🦀
-colorFrom: red
-colorTo: red
-sdk: docker
-pinned: false
----
+# AI Playground
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+Project demonstrating what neural networks can do using Elixir.
