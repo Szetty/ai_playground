@@ -46,7 +46,13 @@ defmodule AIPlayground.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:rustler, "~> 0.27.0"},
       {:kino_bumblebee, "~> 0.1.4"},
-      {:exla, "0.4.0"}
+      {:exla, "0.4.1"},
+      {:ets, "~> 0.9.0"},
+      {:ex_openai, github: "dvcrn/ex_openai", ref: "24f478f58f4350268c03528632de2e9ecdef04c4"},
+      {:axon, "~> 0.3.1"},
+      {:csv, "~> 3.0"},
+      {:tokenizers, "~> 0.2.0"},
+      {:table_rex, "~> 3.1.1"}
     ]
   end
 

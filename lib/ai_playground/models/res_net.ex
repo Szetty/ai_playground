@@ -10,7 +10,7 @@ defmodule AIPlayground.Models.ResNet do
     )
   end
 
-  def run(serving, %{data: data, height: height, width: width} = image) do
+  def run(serving, %{data: data, height: height, width: width}) do
     input =
       data
       |> Nx.from_binary(:u8)

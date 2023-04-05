@@ -7,14 +7,16 @@ defmodule AIPlayground do
   if it comes from the database, an external API or others.
   """
 
-  alias AIPlayground.Models.{GPT2, RoBERTa, BERTNER, ResNet}
+  alias AIPlayground.Models.{GPT2, RoBERTa, BERTNER, ResNet, StableDiffusion}
   alias AIPlayground.RustAI
+  alias AIPlayground.Storage
 
   @models [
     GPT2,
     RoBERTa,
     BERTNER,
-    ResNet
+    ResNet,
+    StableDiffusion
   ]
 
   @type scored_list :: [%{label: String.t(), score: float()}]
@@ -30,6 +32,7 @@ defmodule AIPlayground do
         ]
 
   def init() do
+    Storage.init()
     init_rust_ai()
 
     @models
@@ -48,8 +51,12 @@ defmodule AIPlayground do
   @spec run_bert_ner(String.t()) :: entities_list()
   def run_bert_ner(text), do: run_model(BERTNER, text)
 
-  @spec run_res_net(%{data: binary(), height: non_neg_integer(), width: non_neg_integer()}) :: scored_list()
+  @spec run_res_net(%{data: binary(), height: non_neg_integer(), width: non_neg_integer()}) ::
+          scored_list()
   def run_res_net(image), do: run_model(ResNet, image)
+
+  @spec run_stable_diffusion(String.t()) :: any()
+  def run_stable_diffusion(text), do: run_model(StableDiffusion, text)
 
   @spec translate_en_to_ro(String.t()) :: String.t()
   def translate_en_to_ro(text) do

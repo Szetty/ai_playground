@@ -23,16 +23,6 @@ defmodule AIPlayground.KinoUI do
     end)
   end
 
-  def text_to_image(title, text, model_runner) do
-    build_ui_with_form_frame_separator(title, text, fn frame, %{text: text} ->
-      for result <- model_runner.(text) do
-        Kino.Image.new(result.image)
-      end
-      |> Kino.Layout.grid(columns: 2)
-      |> then(&Kino.Frame.render(frame, &1))
-    end)
-  end
-
   def image_to_scored_list(title, model_runner) do
     form = form_with_image(title)
 
@@ -51,6 +41,28 @@ defmodule AIPlayground.KinoUI do
     [form, frame, separator()]
   end
 
+  def text_to_image_layout(text, model_runner) do
+    text_input = Kino.Input.textarea("Text", default: text)
+
+    form = Kino.Control.form([text: text_input], submit: "Run")
+    frame = Kino.Frame.new()
+
+    form
+    |> Kino.Control.stream()
+    |> Kino.listen(fn %{data: %{text: text}} ->
+      Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+      results = model_runner.(text)
+
+      for result <- results do
+        Kino.Image.new(result.image)
+      end
+      |> Kino.Layout.grid(columns: 1)
+      |> then(&Kino.Frame.render(frame, &1))
+    end)
+
+    Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+  end
+
   defp build_ui_with_form_frame_separator(title, text, output_renderer) do
     form = form_with_text(title, text)
     frame = frame_on_form_listen(form, output_renderer)
@@ -65,7 +77,7 @@ defmodule AIPlayground.KinoUI do
 
   defp form_with_image(title) do
     image_input = Kino.Input.image(title, size: {224, 224})
-    form = Kino.Control.form([image: image_input], submit: "Run")
+    Kino.Control.form([image: image_input], submit: "Run")
   end
 
   defp frame_on_form_listen(form, output_renderer, filter \\ fn _ -> true end) do

@@ -33,7 +33,7 @@ defmodule AIPlayground.Models.StableDiffusion do
 
     Bumblebee.Diffusion.StableDiffusion.text_to_image(clip, unet, vae, tokenizer, scheduler,
       num_steps: 10,
-      num_images_per_prompt: 1,
+      num_images_per_prompt: 2,
       safety_checker: safety_checker,
       safety_checker_featurizer: featurizer,
       compile: [batch_size: 1, sequence_length: 50],

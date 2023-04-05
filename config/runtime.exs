@@ -20,6 +20,15 @@ if System.get_env("PHX_SERVER") do
   config :ai_playground, AIPlaygroundWeb.Endpoint, server: true
 end
 
+api_key = System.get_env("OPEN_AI_API_KEY")
+organization_key = System.get_env("OPEN_AI_ORGANIZATION_ID")
+
+if api_key != nil and organization_key != nil do
+  config :ex_openai,
+    api_key: api_key,
+    organization_key: organization_key
+end
+
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

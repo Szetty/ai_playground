@@ -5,6 +5,7 @@ use rust_bert::resources::RemoteResource;
 use rust_bert::t5::{T5ConfigResources, T5ModelResources, T5VocabResources};
 use rustler::{Env, ResourceArc, Term};
 use std::sync::Mutex;
+use tch::Device;
 
 fn load(env: Env, _: Term) -> bool {
     rustler::resource!(Context, env);
@@ -83,7 +84,7 @@ fn init_translation_model() -> Result<TranslationModel, String> {
         None,
         source_languages,
         target_languages,
-        None, // Device::cuda_if_available(),
+        Device::cuda_if_available(),
     );
 
     match TranslationModel::new(translation_config) {
