@@ -39,3 +39,4 @@ libtorch
 priv/native
 *.pem
 *.env
+bin/run_docker_on_remote_server.sh

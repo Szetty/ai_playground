@@ -32,13 +32,27 @@ defmodule AIPlayground do
         ]
 
   def init() do
+    init_storage()
+    init_ai()
+  end
+
+  def init_storage() do
     Storage.init()
+  end
+
+  def init_ai() do
     init_rust_ai()
 
     @models
     |> Enum.each(fn model ->
       model.init()
       |> then(&save_model(model, &1))
+    end)
+
+    spawn(fn ->
+      if AIPlayground.all_models_working?() do
+        IO.puts("All models working as expected")
+      end
     end)
   end
 
@@ -114,6 +128,12 @@ defmodule AIPlayground do
     ] = run_bert_ner("Rachel Green works at Ralph Lauren in New York City in the sitcom Friends.")
 
     " salutări" = translate_en_to_ro("hello")
+
+    " hello, i'm katie mccartney and i love you. thank you so much for stopping by my page. catiema: i am so happy that you stopped by my blog. thanks for visiting." =
+      summarize(
+        "Hello, i'm katie mccartney.. Hello, my name is catiema and i love you. Thank you for stopping by my page. thank you for visiting my page and thank you so much for your time."
+      )
+
     true
   end
 

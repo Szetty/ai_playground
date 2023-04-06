@@ -56,7 +56,7 @@ defmodule AIPlayground.KinoUI do
       for result <- results do
         Kino.Image.new(result.image)
       end
-      |> Kino.Layout.grid(columns: 1)
+      |> Kino.Layout.grid(columns: 2)
       |> then(&Kino.Frame.render(frame, &1))
     end)
 

@@ -3,14 +3,6 @@
 # State of the art Neural Networks in Elixir
 
 ```elixir
-# Mix.install(
-#   [
-#     {:kino_bumblebee, "~> 0.1.0"},
-#     {:exla, "~> 0.4.1"}
-#   ],
-#   config: [nx: [default_backend: EXLA.Backend]]
-# )
-
 alias AIPlayground.KinoUI
 ```
 
@@ -24,18 +16,22 @@ alias AIPlayground.KinoUI
 
 ## Agenda
 
-<div style="background-image: url(''); background-size: cover; background-repeat: no-repeat; background-position: center;">
+<div style="background-image: url('https://lh3.googleusercontent.com/pw/AMWts8D-meLl3BXYMyUbvhguNiOavzcpepJQ90N0xZpFui8Q-wEhyOMmEPOFBFSsQFobPfXPsz6bjRlMGjbdajZxCc1b2sdiKxcHwNHF-LoZ_RVG6_gBN65240Af7ELKZz6dbttlUortNZogHoiP1fN7SHLU=w1870-h1158-s-no'); background-size: cover; background-repeat: no-repeat;">
 
-1. Text generation
-2. Text classification
-3. Token classification
-4. Image classification
-5. Text to image
-6. Translations and summarization
-7. Live demo on Neural Network building
-8. Some models we cannot run on Beam yet
-9. Bonus model
+<div style="color:white">
+<br><br>
 
+  1. Text generation
+  2. Text classification
+  3. Token classification
+  4. Image classification
+  5. Text to image
+  6. Translations and summarization
+  7. Live demo on Neural Network building
+  8. Some models we cannot run on Beam yet
+  9. Bonus model
+
+</div>
 </div>
 
 <!-- livebook:{"branch_parent_index":1} -->
@@ -308,6 +304,10 @@ The outpouring of anger and outrage after Mr. Floyd's death — and the speed at
 * Even if a given model's first version seems hard to work with, humanity has proven to improve on them (just think about GPT history)
 * now we can more or less safely choose Elixir for AI involved projects too, we have many ways to run models and pretty efficiently too
 
+<!-- livebook:{"break_markdown":true} -->
+
+![](images/depositphotos_9723574-stock-photo-3d-question-answer-on-white.jpg)
+
 ## Glossary
 
 * **NN** - **Neural Network** - a network of multiple neurons, this is how the brain is constructed, and this is what Artificial Neural Networks also try to mimic, in computer science they are basically just some interconnected nodes, which do some mathematical calculations and passing data to the next neuron
@@ -319,3 +319,4 @@ The outpouring of anger and outrage after Mr. Floyd's death — and the speed at
 * **Axon** -> a library in Elixir to work with neural networks (think like **Keras** for Python), it works on top of **Nx**
 * **Bumblebee** -> library containing pretrained and prebuilt neural networks, it works on top of **Axon**
 * **ONNX** - **Open Neural Network Exchange** -> an open ecosystem that empowers AI developers to choose the right tools as their project evolves, ONNX provides an open source format for AI models, both deep learning and traditional ML.
+* **LSTM** - **Long Short-Term Memory** -> a type of neural network layer that lets the neural network to memorize data, i.e. being able to factor in short and long contexts too

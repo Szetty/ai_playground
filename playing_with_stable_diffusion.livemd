@@ -1,0 +1,32 @@
+# Playing with stable diffusion
+
+## Setup
+
+```elixir
+alias AIPlayground.Models.StableDiffusion
+
+stable_diffusion_model = StableDiffusion.init()
+```
+
+```elixir
+stable_diffusion_ui = fn player_name, text ->
+  title = Kino.HTML.new("<h2> FROM #{player_name}: </h2>")
+  frame = Kino.Frame.new()
+
+  results = StableDiffusion.run(stable_diffusion_model, text)
+
+  for result <- results do
+    Kino.Image.new(result.image)
+  end
+  |> Kino.Layout.grid(columns: 2)
+  |> then(&Kino.Frame.render(frame, &1))
+
+  Kino.Layout.grid([title, frame], boxed: true, gap: 16)
+end
+```
+
+## Play
+
+```elixir
+stable_diffusion_ui.("arnold", "numbat, forest, high quality, detailed, digital art")
+```

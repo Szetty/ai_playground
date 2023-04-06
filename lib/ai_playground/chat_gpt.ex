@@ -24,10 +24,13 @@ defmodule AIPlayground.ChatGPT do
         case finish_reason do
           "stop" ->
             content
+
           "length" ->
-            content <> """
-            Sorry, this is all because of the maximum tokens you provided!
-            """
+            content <>
+              """
+              Sorry, this is all because of the maximum tokens you provided!
+              """
+
           other_finish_reason ->
             Logger.error("Unacceptable finish reason", response: inspect(other_finish_reason))
             "Something went wrong, sorry..."

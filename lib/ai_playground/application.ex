@@ -10,12 +10,6 @@ defmodule AIPlayground.Application do
     IO.puts("Init")
     AIPlayground.init()
 
-    spawn(fn ->
-      if AIPlayground.all_models_working? do
-        IO.puts("All models working as expected")
-      end
-    end)
-
     children = [
       # Start the Telemetry supervisor
       AIPlaygroundWeb.Telemetry,
